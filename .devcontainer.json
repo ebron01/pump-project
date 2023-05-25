@@ -1,0 +1,13 @@
+{
+  "image": "pumpproject",
+  // "image":"suru",
+  "runArgs": [
+    "--net=host",
+    "--shm-size=16gb",
+    "--gpus=all",
+    "--volume=/c/Users/luchy/Desktop/data:/work/data:ro"
+  ],
+  "workspaceFolder": "/work"
+  // "runArgs": ["--add-host=host.docker.internal:172.19.176.1","--net=host"]
+}
+
