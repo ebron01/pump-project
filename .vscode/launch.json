@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "pump",
+      "type": "python",
+      "request": "launch",
+      "program": "code/trainLSTM.py",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "args": "/work/data/train/"
+    }
+  ]
+}
