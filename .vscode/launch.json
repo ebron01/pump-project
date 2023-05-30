@@ -5,7 +5,7 @@
       "name": "pump",
       "type": "python",
       "request": "launch",
-      "program": "code/trainLSTM.py",
+      "program": "code/train.py",
       "console": "integratedTerminal",
       "justMyCode": false,
       "args": "/work/data/train/"
