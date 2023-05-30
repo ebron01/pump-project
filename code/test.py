@@ -18,7 +18,7 @@ def main():
     dataDirTest = args.dataDir
     outPath = args.outPath
 
-    # process test data
+    # process test data993
     all_data_test, features_test, time_column_test, event_column_test = processData(dataDirTest)
 
     # read trained model
@@ -26,12 +26,12 @@ def main():
     LinearMultiTaskModelSkl = sklearn_adapter(LinearMultiTaskModel, time_col=time_column_test, event_col=event_column_test,
                                             predict_method="predict_survival", scoring_method=concordance_index)
 
-    with open('model.pickle', 'rb') as f:
+    with open('/work/code/model.pickle', 'rb') as f:
         l_mtlr = pickle.load(f)
 
     # load trained features list
     features = []
-    with open('features.pickle', 'rb') as f:
+    with open('/work/code/features.pickle', 'rb') as f:
         features = pickle.load(f)
 
     # handle new values for categorical cata

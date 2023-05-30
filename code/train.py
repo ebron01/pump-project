@@ -33,11 +33,11 @@ def main():
 
     print("Saving model")
 
-    with open('model.pickle', 'wb') as f:
+    with open('model_new.pickle', 'wb') as f:
         pickle.dump(l_mtlr, f)
     print("Done")
 
-    with open('features.pickle', 'wb') as f:
+    with open('features_new.pickle', 'wb') as f:
         pickle.dump(features, f)
     print("Done")
 
