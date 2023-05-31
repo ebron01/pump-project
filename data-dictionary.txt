@@ -1,0 +1,68 @@
+Data dictionary
+
+---------------------------------------------------
+1. Pump metadata
+---------------------------------------------------
+
+=== Primary features ===
+
+The following is a list of features in equipment_metadata.csv that are assumed to have an impact on pump run life, are helpful in identifying the device, or detail important dates about the device.
+
+- failure_number: Index of dataset indicating failure number, can be linked to operations and run life data, unique (numeric)
+- location_specific: Obfuscated, not unique (text)
+- location: Obfuscated, not unique (text)
+- installed_date: Date of device installation (YYYY-MM-DD)
+- start_date: Date of device start-up (YYYY-MM-DD)
+- failed_date: Date of device failure (YYYY-MM-DD)
+- removed_date: Date of device removal (YYYY-MM-DD) 
+- status: Status of the device (text)
+  Possible values:
+    * Removed: device has failed. (See description below at 'censored' for an exception.)
+    * Current: device is operational/currently running (at the last known time point in the operational data)
+    * Suspected Failures Only: device has a suspected but not confirmed failure. For the purposes of this contest this is handled as failed.
+- vendor: device vendor. Obfuscated, not unique (text)
+- pump_type: device type. Obfuscated, not unique (text)
+- pump_size: device size (numeric)
+- motor_type: device motor type. Obfuscated, not unique (text)
+- motor_power: device motor rating (numeric)
+- censored: If “Yes”, indicates that the device was not run to failure, data is considered censored. Note that even though these records are assigned a failed date, the pump was removed for maintenance or other reason prior to actually failing. For the purposes of this contest these records should NOT be handled as failed.(text)
+
+=== Secondary features ===
+
+The following is a list of features in equipment_metadata.csv that can be leveraged to further understand impacts on device run life or categorize failure details.
+- reason_for_replacement, failure_cause_general, primary_failed_item, primary_failed_item_descriptor : obfuscated, textual fields. The value 9bfb4b means no information available.
+- location_coordinate_1,location_coordinate_2: numeric
+
+---------------------------------------------------
+2. Operations data
+---------------------------------------------------
+Operations data, {failure_number}.csv, is used to assess the operating conditions of the device, measured in 5 minute increments. Data is collected per device for the duration of its run-life (device start date to failed date) or to the current day if the device has not failed yet.
+
+The following is a list of features in {failure_number}.csv that are assumed to have an impact on device run life.
+
+- failure_number: Failure number identifier, can be linked to device metadata (numeric) 
+- date: Date and time of operations data measurement (MM/DD/YYYY HH:MM:SS AM/PM) 
+- pump_speed, pump_current, motor_temp, pump_temp, fluid_press, fluid_temp, motor_trq, motor_neutral_v: numeric values, may be missing. Values are scaled, so e.g. xxx_temp values may contain temperature values outside of plausible ranges.
+
+---------------------------------------------------
+3. Device run life data
+---------------------------------------------------
+{failure_number}_runhours.csv, represent the daily device run life (in hours) for a particular device. 
+
+- failure_number Failure number identifier, can be linked to device metadata (numeric)
+- date: Start date and time of the measured run life hours (YYYY-MM-DD HH:MM:SS)
+- run_hours: Number of hours of device run life for the corresponding date (numeric)
+
+Data frequency: 1 sample per day, for the duration of the device run-life or to the current day if the device has not failed yet.
+
+---------------------------------------------------
+4. Calculated features
+---------------------------------------------------
+Based on previous research and historical operating experience there are many calculated / cumulative features that can be used as strong indicators of run-life. Solvers are encouraged to experiment with these and similar features derived from operations data.
+
+- Number of or duration of device temperature cycles per runlife. Calculated from the motor_temp or pump_temp tags. Experience shows that steady temperature is preferred. A device that stays at a temperature lower than T1 or higher than T2 (exact values not disclosed) after operating normally for a reasonable duration is not recommended and has been found to affect run-life. Also, research showed that temperature decrease rate during shutdowns impacted device run life.
+- Number of device trips. Calculated based on the device pump_speed tag. If the tag measures close to 0 or less than a certain threshold, it has likely tripped. Previous research found that the shutdown length and number of shutdowns were both useful features for predicting device run life.
+- Number of or duration of amperage spikes. Calculated based on the device pump_current tag. Spikes are defined as a 10-15% swing in the motor current.
+- Number of or duration of deadheading events. Calculated based on the pump_speed and fluid_temp tags. Deadheading is defined as a device operating at normal speed while not moving any fluid (low fluid_temp).
+- Number of or duration of operating events outside of normal operating conditions. Calculated based on e.g. the pump_current or pump_speed tags.
+

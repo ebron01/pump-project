@@ -1,13 +1,16 @@
 {
-  "image": "pumpproject",
-  // "image":"suru",
+  "build": {
+    // Path is relataive to the devcontainer.json file.
+    "dockerfile": "Dockerfile"
+  },
+  // "workspaceFolder": "/work",
+  // "workspaceMount": "source=${localWorkspaceFolder},target={workspaceFolder},type=bind",
   "runArgs": [
     "--net=host",
     "--shm-size=16gb",
     "--gpus=all",
-    "--volume=/c/Users/luchy/Desktop/data:/work/data:ro"
-  ],
-  "workspaceFolder": "/work"
+    // "--volume=/c/Users/yusuf/pump-project/data:/work/data:ro"
+  ]
   // "runArgs": ["--add-host=host.docker.internal:172.19.176.1","--net=host"]
 }
 

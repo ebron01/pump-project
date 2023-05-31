@@ -5,18 +5,18 @@ RUN apt install gcc g++ git
 
 # Create a /work directory within the container, copy everything from the
 # build directory and switch there.
-RUN mkdir /work
-COPY requirements.txt /work/requirements.txt
-WORKDIR /work
+# RUN mkdir /work
+COPY requirements.txt requirements.txt
+# WORKDIR /work
 
 
 RUN pip install -r requirements.txt
 
-COPY . /work
+# COPY . /work
 
 # test and train scripts should be executable within the container.
-RUN chmod +x test.sh
-RUN chmod +x train.sh
+# RUN chmod +x test.sh
+# RUN chmod +x train.sh
 
-CMD sh
+# CMD sh
 # run the container with "docker run -it <image_name>" then in the shell call train.sh and test.sh scripts
