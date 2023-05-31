@@ -17,7 +17,7 @@ def main():
 
     dataDir = args.dataDir
 
-    if True:
+    if False:
         with open('my_data.pkl', 'wb') as outp:
             all_data_train, features, time_column, event_column = processData(dataDir)
             pickle.dump(all_data_train, outp, pickle.HIGHEST_PROTOCOL)
@@ -51,8 +51,8 @@ def main():
 
     # note - bins 400 is barely enough for daily resolution for a bin if max runtime is ~10k hours. should consider using larger bins
     l_mtlr = LinearMultiTaskModelSkl(structure = [ {'activation': 'relu', 'num_units': 128}, 
-                          {'activation': 'tanh', 'num_units': 128},{'activation': 'tanh', 'num_units': 128} ],bins=400, auto_scaler=True,num_epochs=10000)
-    l_mtlr.fit(X_train, Y_train, lr=1e-5, init_method='orthogonal')
+                          {'activation': 'tanh', 'num_units': 128},{'activation': 'tanh', 'num_units': 128} ],bins=400, auto_scaler=True,num_epochs=100000)
+    l_mtlr.fit(X_train, Y_train, lr=1e-6, init_method='orthogonal')
     print("Training complete")
 
     print("Saving model")
