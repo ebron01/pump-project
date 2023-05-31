@@ -17,7 +17,7 @@ def main():
 
     dataDir = args.dataDir
 
-    if False:
+    if True:
         with open('my_data.pkl', 'wb') as outp:
             all_data_train, features, time_column, event_column = processData(dataDir)
             pickle.dump(all_data_train, outp, pickle.HIGHEST_PROTOCOL)
@@ -32,15 +32,15 @@ def main():
             event_column = pickle.load(inp)
 
     # split current data into train and test set since we dont have the ultimate test y values
-    # X_train = all_data_train[features]
-    # Y_train = all_data_train[[time_column, event_column]]
+    X_train = all_data_train[features]
+    Y_train = all_data_train[[time_column, event_column]]
 
-    X_train, X_test, y_train, y_test = train_test_split(all_data_train[features], all_data_train[[time_column, event_column]], test_size=0.3, random_state=101)
+    # X_train, X_test, y_train, y_test = train_test_split(all_data_train[features], all_data_train[[time_column, event_column]], test_size=0.3, random_state=101)
 
     # save test data for further use
-    with open('test_data.pkl','wb') as test:
-        pickle.dump(X_test, test, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(y_test, test, pickle.HIGHEST_PROTOCOL)
+    # with open('test_data.pkl','wb') as test:
+    #     pickle.dump(X_test, test, pickle.HIGHEST_PROTOCOL)
+    #     pickle.dump(y_test, test, pickle.HIGHEST_PROTOCOL)
 
     print("Starting training")
     # Adapt class LinearMultiTaskModel to make it compatible with scikit-learn
@@ -51,8 +51,8 @@ def main():
 
     # note - bins 400 is barely enough for daily resolution for a bin if max runtime is ~10k hours. should consider using larger bins
     l_mtlr = LinearMultiTaskModelSkl(structure = [ {'activation': 'relu', 'num_units': 128}, 
-                          {'activation': 'tanh', 'num_units': 128}, ],bins=400, auto_scaler=True)
-    l_mtlr.fit(X_train, y_train, lr=1e-5, init_method='orthogonal')
+                          {'activation': 'tanh', 'num_units': 128},{'activation': 'tanh', 'num_units': 128} ],bins=400, auto_scaler=True,num_epochs=10000)
+    l_mtlr.fit(X_train, Y_train, lr=1e-5, init_method='orthogonal')
     print("Training complete")
 
     print("Saving model")

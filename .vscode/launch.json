@@ -2,13 +2,22 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "pump",
+      "name": "test",
+      "type": "python",
+      "request": "launch",
+      "program": "code/test.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "args": ["data/test/","solution.csv"]
+    },
+    {
+      "name": "train",
       "type": "python",
       "request": "launch",
       "program": "code/train.py",
       "console": "integratedTerminal",
       "justMyCode": false,
-      "args": "/work/data/train/"
+      "args": "data/train/"
     }
   ]
 }
