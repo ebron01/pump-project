@@ -26,7 +26,7 @@ def processData(dataDir):
 
     for index, row in equipment.iterrows():
         fnum = row['failure_number']
-        print("Processing device ", fnum, datetime.now())
+        # print("Processing device ", fnum, datetime.now())
         if has_status and row['status'] != 'Current' and row['censored']!='Yes':
                 equipment.at[index,'failed']=1
                 # TODO - add censored rows with failed=0 for each pump that failed. censor the data for the relevant time window (3-120 days)
