@@ -5,6 +5,7 @@ from utils import processData
 from pysurvival.utils.sklearn_adapter import sklearn_adapter
 from pysurvival.utils.metrics import concordance_index
 from pysurvival.models.multi_task import LinearMultiTaskModel
+from pysurvival.models.multi_task import NeuralMultiTaskModel
 import pickle
 
 
@@ -18,20 +19,34 @@ def main():
     dataDirTest = args.dataDir
     outPath = args.outPath
 
-    # process test data993
-    all_data_test, features_test, time_column_test, event_column_test = processData(dataDirTest)
-
+    # process test data
+    # all_data_test, features_test, time_column_test, event_column_test = processData(dataDirTest)
+    if False:
+        with open('my_test_data.pkl', 'wb') as outp:
+            all_data_test, features_test, time_column_test, event_column_test = processData(dataDirTest)
+            pickle.dump(all_data_test, outp, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(features_test, outp, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(time_column_test, outp, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(event_column_test, outp, pickle.HIGHEST_PROTOCOL)
+    else :
+        with open('my_test_data.pkl', 'rb') as inp:
+            all_data_test = pickle.load(inp)
+            features_test = pickle.load(inp)
+            time_column_test = pickle.load(inp)
+            event_column_test = pickle.load(inp)
     # read trained model
     l_mtlr = None
-    LinearMultiTaskModelSkl = sklearn_adapter(LinearMultiTaskModel, time_col=time_column_test, event_col=event_column_test,
+    # LinearMultiTaskModelSkl = sklearn_adapter(LinearMultiTaskModel, time_col=time_column_test, event_col=event_column_test,
+    #                                         predict_method="predict_survival", scoring_method=concordance_index)
+    LinearMultiTaskModelSkl = sklearn_adapter(NeuralMultiTaskModel, time_col=time_column_test, event_col=event_column_test,
                                             predict_method="predict_survival", scoring_method=concordance_index)
 
-    with open('/work/code/model.pickle', 'rb') as f:
+    with open('model.pickle', 'rb') as f:
         l_mtlr = pickle.load(f)
 
     # load trained features list
     features = []
-    with open('/work/code/features.pickle', 'rb') as f:
+    with open('features.pickle', 'rb') as f:
         features = pickle.load(f)
 
     # handle new values for categorical cata

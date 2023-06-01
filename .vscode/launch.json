@@ -16,24 +16,17 @@
       "request": "launch",
       "program": "code/test.py",
       "console": "integratedTerminal",
-      "justMyCode": false,
-      "args": ["/work/data/train/", "/work/solution_pred.csv"]
+      "justMyCode": true,
+      "args": ["data/test/", "solution.csv"]
     },
     {
-      "name": "scorer",
+      "name": "train",
       "type": "python",
       "request": "launch",
-      "program": "scorer.py",
+      "program": "code/train.py",
       "console": "integratedTerminal",
       "justMyCode": false,
-      "args": [
-        "--truth",
-        "/work/data/train/equipment_metadata.csv",
-        "--pred",
-        "/work/solution_pred.csv",
-        "--out_dir",
-        "/work/"
-      ]
+      "args": ["data/train/"]
     }
   ]
 }
