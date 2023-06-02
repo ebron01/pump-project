@@ -20,10 +20,10 @@
       "args": ["data/test/", "solution.csv"]
     },
     {
-      "name": "train",
+      "name": "trainLSTM",
       "type": "python",
       "request": "launch",
-      "program": "code/train.py",
+      "program": "code/trainLSTM.py",
       "console": "integratedTerminal",
       "justMyCode": false,
       "args": ["data/train/"]

@@ -2,16 +2,17 @@ import torch
 import argparse
 import pandas as pd
 from pysurvival.models.multi_task import LinearMultiTaskModel
-# from pysurvival.utils.sklearn_adapter import sklearn_adapter
+from pysurvival.models.multi_task import NeuralMultiTaskModel
+from pysurvival.utils.sklearn_adapter import sklearn_adapter
 from pysurvival.utils.metrics import concordance_index
 import pickle
 from utils import processData
+from sklearn.model_selection import train_test_split
 from models.SequenceDataset import SequenceDataset
 from torch.utils.data import DataLoader
 from torch import nn
 from models.LSTM import ShallowRegressionLSTM
 torch.manual_seed(99)
-
 
 def train_model(data_loader, model, loss_function, optimizer):
     num_batches = len(data_loader)
@@ -41,8 +42,21 @@ def main():
 
     dataDir = args.dataDir
 
-    all_data_train, features, time_column, event_column = processData(dataDir)
+    if False:
+        with open('my_data.pkl', 'wb') as outp:
+            all_data_train, features, time_column, event_column = processData(dataDir)
+            pickle.dump(all_data_train, outp, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(features, outp, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(time_column, outp, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(event_column, outp, pickle.HIGHEST_PROTOCOL)
+    else :
+        with open('my_data.pkl', 'rb') as inp:
+            all_data_train = pickle.load(inp)
+            features = pickle.load(inp)
+            time_column = pickle.load(inp)
+            event_column = pickle.load(inp)
 
+    # split current data into train and test set since we dont have the ultimate test y values
     X_train = all_data_train[features]
     # Y_train = all_data_train[[time_column, event_column]]
     # let's start with one output
@@ -70,24 +84,15 @@ def main():
     for ix_epoch in range(50):
         print(f"Epoch {ix_epoch}\n---------")
         train_model(train_loader, model, loss_function, optimizer=optimizer)
+    print("Saving model")
 
-    # # Adapt class LinearMultiTaskModel to make it compatible with scikit-learn
-    # LinearMultiTaskModelSkl = sklearn_adapter(LinearMultiTaskModel, time_col=time_column, event_col=event_column,
-    #                                           predict_method="predict_survival", scoring_method=concordance_index)
+    with open('model.pickle', 'wb') as f:
+        pickle.dump(model, f)
+    print("Done")
 
-    # # note - bins 400 is barely enough for daily resolution for a bin if max runtime is ~10k hours. should consider using larger bins
-    # l_mtlr = LinearMultiTaskModelSkl(bins=400, auto_scaler=True)
-    # l_mtlr.fit(X_train, Y_train, lr=1e-5, init_method='orthogonal')
-
-    # print("Saving model")
-
-    # with open('model.pickle', 'wb') as f:
-    #     pickle.dump(l_mtlr, f)
-    # print("Done")
-
-    # with open('features.pickle', 'wb') as f:
-    #     pickle.dump(features, f)
-    # print("Done")
+    with open('features.pickle', 'wb') as f:
+        pickle.dump(features, f)
+    print("Done")
 
 
 if __name__ == '__main__':

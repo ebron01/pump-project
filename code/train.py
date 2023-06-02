@@ -32,10 +32,10 @@ def main():
             event_column = pickle.load(inp)
 
     # split current data into train and test set since we dont have the ultimate test y values
-    X_train = all_data_train[features]
-    Y_train = all_data_train[[time_column, event_column]]
+    # X_train = all_data_train[features]
+    # Y_train = all_data_train[[time_column, event_column]]
 
-    # X_train, X_test, y_train, y_test = train_test_split(all_data_train[features], all_data_train[[time_column, event_column]], test_size=0.3, random_state=101)
+    X_train, X_test, Y_train, Y_test = train_test_split(all_data_train[features], all_data_train[[time_column, event_column]], test_size=0.3, random_state=101)
 
     # save test data for further use
     # with open('test_data.pkl','wb') as test:
@@ -51,10 +51,13 @@ def main():
 
     # note - bins 400 is barely enough for daily resolution for a bin if max runtime is ~10k hours. should consider using larger bins
     l_mtlr = LinearMultiTaskModelSkl(structure = [ {'activation': 'relu', 'num_units': 128}, 
-                          {'activation': 'tanh', 'num_units': 128},{'activation': 'tanh', 'num_units': 128} ],bins=400, auto_scaler=True,num_epochs=100000)
+                          {'activation': 'tanh', 'num_units': 128}],bins=400, auto_scaler=True,num_epochs=1000)
     l_mtlr.fit(X_train, Y_train, lr=1e-6, init_method='orthogonal')
     print("Training complete")
 
+    from pysurvival.utils.display import integrated_brier_score
+    integrated_brier_score(l_mtlr.pysurvival_model, X_test, Y_test[time_column], Y_test[event_column], t_max=100,
+                       figure_size=(20, 6.5) )
     print("Saving model")
 
     with open('model.pickle', 'wb') as f:

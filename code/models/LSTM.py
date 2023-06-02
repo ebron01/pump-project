@@ -18,7 +18,7 @@ class ShallowRegressionLSTM(nn.Module):
             num_layers=self.num_layers
         )
 
-        self.linear = nn.Linear(in_features=self.hidden_units, out_features=1)
+        self.linear = nn.Softmax(in_features=self.hidden_units, out_features=1)
 
     def forward(self, x):
         batch_size = x.shape[0]
