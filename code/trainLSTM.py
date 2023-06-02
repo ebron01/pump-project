@@ -6,7 +6,7 @@ from pysurvival.models.multi_task import NeuralMultiTaskModel
 from pysurvival.utils.sklearn_adapter import sklearn_adapter
 from pysurvival.utils.metrics import concordance_index
 import pickle
-from utils import processData
+from utils import processData, processLSTM
 from sklearn.model_selection import train_test_split
 from models.SequenceDataset import SequenceDataset
 from torch.utils.data import DataLoader
@@ -44,20 +44,26 @@ def main():
 
     if False:
         with open('my_data.pkl', 'wb') as outp:
-            all_data_train, features, time_column, event_column = processData(dataDir)
+            all_data_train, features, time_column, event_column, daily_run_data = processData(dataDir)
             pickle.dump(all_data_train, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(features, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(time_column, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(event_column, outp, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(daily_run_data, outp, pickle.HIGHEST_PROTOCOL)
+
     else :
         with open('my_data.pkl', 'rb') as inp:
             all_data_train = pickle.load(inp)
             features = pickle.load(inp)
             time_column = pickle.load(inp)
             event_column = pickle.load(inp)
-
+            daily_run_data = pickle.load(inp)
+    
+    lstm_data = processLSTM(daily_run_data)
+    
     # split current data into train and test set since we dont have the ultimate test y values
     X_train = all_data_train[features]
+    X_train_n = lstm_data
     # Y_train = all_data_train[[time_column, event_column]]
     # let's start with one output
     Y_train = all_data_train[event_column]

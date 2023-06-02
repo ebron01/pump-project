@@ -17,19 +17,21 @@ def main():
 
     dataDir = args.dataDir
 
-    if False:
+    if True:
         with open('my_data.pkl', 'wb') as outp:
-            all_data_train, features, time_column, event_column = processData(dataDir)
+            all_data_train, features, time_column, event_column, daily_run_data = processData(dataDir)
             pickle.dump(all_data_train, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(features, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(time_column, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(event_column, outp, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(daily_run_data, outp, pickle.HIGHEST_PROTOCOL)
     else :
         with open('my_data.pkl', 'rb') as inp:
             all_data_train = pickle.load(inp)
             features = pickle.load(inp)
             time_column = pickle.load(inp)
             event_column = pickle.load(inp)
+            daily_run_data =  pickle.load(inp)
 
     # split current data into train and test set since we dont have the ultimate test y values
     # X_train = all_data_train[features]

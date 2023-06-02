@@ -15,6 +15,7 @@ def processData(dataDir):
     pcntChangeMotorTrqs = []
     cooldownsCount = []
     runDaysAll = []
+    dailyRunDataAll = pd.DataFrame()
 
     # TODO - fix date parsing, this is fairly slow - avoid using dates if possible
     op_format = "%m/%d/%Y"
@@ -82,7 +83,8 @@ def processData(dataDir):
             pcntChangeMotorTemps.append(pcntChangeMotorTemp)
             pcntChangeMotorTrqs.append(pcntChangeMotorTrq)
             cooldownsCount.append(len(peaks))
-            runDaysAll.append(runDays)        
+            runDaysAll.append(runDays)
+            dailyRunDataAll = dailyRunDataAll.append(daily_run_data)        
         except Exception as e:
             print(e)
             pass
@@ -123,4 +125,23 @@ def processData(dataDir):
     time_column = 'run_days'
     event_column = 'failed'
     
-    return all_data_encoded, features, time_column, event_column
+    return all_data_encoded, features, time_column, event_column, dailyRunDataAll
+
+def processLSTM(daily_data):
+    print("LSTM started")
+    lstm_data = {}
+    #manipulate data for lstm : 
+    # lstmdata --> key : key_data 
+    # key: unique failure numbers 
+    # key_data : corresponding daily list data of failure number pump
+    for key in daily_data["failure_number_x"].unique():
+        lstm_data[key] = daily_data[daily_data['failure_number_x'] == key].to_numpy()
+    return lstm_data
+
+def deleteMissing(daily_data, event):
+    missing_value, missing_index = [], [] 
+    for index, value in (enumerate(daily_data)):
+        if len(daily_data[value]) < 51:
+            missing_value.append(value)
+            missing_index.append(index)
+    
