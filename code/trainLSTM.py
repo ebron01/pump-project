@@ -42,7 +42,7 @@ def main():
 
     dataDir = args.dataDir
 
-    if True:
+    if False:
         with open('my_data.pkl', 'wb') as outp:
             all_data_train, features, time_column, event_column, daily_run_data = processData(dataDir)
             train_data, event_data = processLSTM(dataDir, daily_run_data)
@@ -60,7 +60,6 @@ def main():
             features = pickle.load(inp)
             time_column = pickle.load(inp)
             event_column = pickle.load(inp)
-            daily_run_data = pickle.load(inp)
             train_data = pickle.load(inp)
             event_data = pickle.load(inp)
     
