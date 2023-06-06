@@ -42,18 +42,18 @@ def main():
 
     dataDir = args.dataDir
 
-    if False:
+    if True:
         with open('my_data.pkl', 'wb') as outp:
             all_data_train, features, time_column, event_column, daily_run_data = processData(dataDir)
+            train_data, event_data = processLSTM(dataDir, daily_run_data)
             # daily_run_data, event_data, equipment = processLSTM(dataDir, daily_run_data)
             # train_data, event_data = deleteMissing(daily_run_data, event_data, equipment)
             pickle.dump(all_data_train, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(features, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(time_column, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(event_column, outp, pickle.HIGHEST_PROTOCOL)
-            pickle.dump(daily_run_data, outp, pickle.HIGHEST_PROTOCOL)
-            # pickle.dump(train_data, outp, pickle.HIGHEST_PROTOCOL)
-            # pickle.dump(event_data, outp, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(train_data, outp, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(event_data, outp, pickle.HIGHEST_PROTOCOL)
     else :
         with open('my_data.pkl', 'rb') as inp:
             all_data_train = pickle.load(inp)
@@ -61,12 +61,10 @@ def main():
             time_column = pickle.load(inp)
             event_column = pickle.load(inp)
             daily_run_data = pickle.load(inp)
-            # train_data = pickle.load(inp)
-            # event_data = pickle.load(inp)
+            train_data = pickle.load(inp)
+            event_data = pickle.load(inp)
     
-    daily_run_data, event_data, equipment = processLSTM(dataDir, daily_run_data)
-    train_data, event_data = deleteMissing(daily_run_data, event_data, equipment)
-    
+    # train_data, event_data = deleteMissing(daily_run_data, equipment)
     # split current data into train and test set since we dont have the ultimate test y values
     # X_train = all_data_train[features]
     X_train = train_data

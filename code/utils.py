@@ -127,12 +127,12 @@ def processData(dataDir):
     
     return all_data_encoded, features, time_column, event_column, dailyRunDataAll
 
-def processLSTM(dataDir, daily_data):
-    # daily_data["event"] = 0
+def processLSTM(dataDir, daily_data, threshold=51):
+    daily_data["event"] = 0
     print("preprocess started")
-    train_data = {}
-    event_data = {}
-    run_format = "%Y-%m-%d"
+    train_data = pd.DataFrame()
+    # event_data = pd.DataFrame()
+    # run_format = "%Y-%m-%d"
     equipment = pd.read_csv(os.path.join(dataDir, "equipment_metadata.csv"))
     has_status = 'status' in equipment.columns
     equipment['failed'] = '0'
@@ -142,7 +142,6 @@ def processLSTM(dataDir, daily_data):
             equipment.at[index,'failed']= row['failed_date']
     equipment = equipment[['failure_number', 'failed']]
     equipment = equipment.set_index('failure_number')
-    
     
     #delete not required columns for lstm from daily data,failure_number_x column will be used below, and will be dropped. 
     daily_data = daily_data.drop(['failure_number_y', 'date'], axis=1)
@@ -155,23 +154,32 @@ def processLSTM(dataDir, daily_data):
     max = 0
     for key in daily_data["failure_number_x"].unique():
         daily_data_key = daily_data[daily_data['failure_number_x'] == key]
-        event = np.zeros(daily_data_key.shape[0])
         shape = daily_data_key['dt'].shape[0]
         if shape > max : max = shape
+    count = 0
+    for key in daily_data["failure_number_x"].unique():
+        daily_data_key = daily_data[daily_data['failure_number_x'] == key]
+        if daily_data_key.shape[0] < threshold:
+            count += 1
+            continue
+        # event = np.zeros(daily_data_key.shape[0])
         #find daily data of key numbered pump and drop failure number x column and add to dict by key
+        df = daily_data[daily_data['failure_number_x'] == key].reindex(range(max), fill_value=0)
         if equipment.loc[key]['failed'] != '0':
             fail_date = pd.to_datetime(equipment.loc[key]['failed'])
             #
-            for index, row in daily_data[daily_data['failure_number_x'] == key].iterrows():
+            # for index, row in daily_data[daily_data['failure_number_x'] == key].iterrows():
+            for index, row in df.iterrows():
                 if row['dt'] == fail_date:
                     # daily_data[daily_data['failure_number_x'] == key].loc[index,'event'] = 1 
-                    event[index] = 1
-        df = daily_data[daily_data['failure_number_x'] == key].reindex(range(2468), fill_value=0)
-        train_data[key] = df.drop(['failure_number_x', 'dt'], axis=1).to_numpy()
+                    df.at[index, 'event'] = 1
+        # df = daily_data[daily_data['failure_number_x'] == key].reindex(range(2468), fill_value=0)
+        # train_data[key] = df.drop(['failure_number_x', 'dt'], axis=1).to_numpy()
         # train_data[key] = daily_data[daily_data['failure_number_x'] == key].drop(['failure_number_x', 'dt'], axis=1).to_numpy()
-        event_data[key] = event
-        
-    return train_data, event_data, equipment
+        # event_data[key] = event
+        train_data = train_data.append(df)
+    # return train_data, event_data, equipment
+    return train_data.drop(['failure_number_x', 'dt', 'event'], axis=1), train_data['event']
 
 def deleteMissing(daily_data, event_data, equipment, threshold=51):
     '''For some of the pumps there are not enough daily data to be included in train. 
