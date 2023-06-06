@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import Dataset
-
+import numpy as np
 
 class SequenceDataset(Dataset):
     # def __init__(self, dataframe, target, features, sequence_length=5):
@@ -8,10 +8,10 @@ class SequenceDataset(Dataset):
         self.features = features
         self.target = target
         self.sequence_length = sequence_length
-        # self.y = torch.tensor(dataframe[self.target].values).float()
-        # self.X = torch.tensor(dataframe[self.features].values).float()
-        self.X = torch.tensor(self.features.values).float()
-        self.y = torch.tensor(self.target.values).float()
+        # self.y = torch.tensor(self.target.values).float()
+        # self.X = torch.tensor(self.features.values).float()
+        self.X = torch.tensor(np.asarray(self.features)).float()
+        self.y = torch.tensor(np.asarray(self.target)).float()
 
     def __len__(self):
         return self.X.shape[0]

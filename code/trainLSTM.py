@@ -6,7 +6,7 @@ from pysurvival.models.multi_task import NeuralMultiTaskModel
 from pysurvival.utils.sklearn_adapter import sklearn_adapter
 from pysurvival.utils.metrics import concordance_index
 import pickle
-from utils import processData, processLSTM
+from utils import processData, processLSTM, deleteMissing
 from sklearn.model_selection import train_test_split
 from models.SequenceDataset import SequenceDataset
 from torch.utils.data import DataLoader
@@ -45,12 +45,15 @@ def main():
     if False:
         with open('my_data.pkl', 'wb') as outp:
             all_data_train, features, time_column, event_column, daily_run_data = processData(dataDir)
+            # daily_run_data, event_data, equipment = processLSTM(dataDir, daily_run_data)
+            # train_data, event_data = deleteMissing(daily_run_data, event_data, equipment)
             pickle.dump(all_data_train, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(features, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(time_column, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(event_column, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(daily_run_data, outp, pickle.HIGHEST_PROTOCOL)
-
+            # pickle.dump(train_data, outp, pickle.HIGHEST_PROTOCOL)
+            # pickle.dump(event_data, outp, pickle.HIGHEST_PROTOCOL)
     else :
         with open('my_data.pkl', 'rb') as inp:
             all_data_train = pickle.load(inp)
@@ -58,15 +61,19 @@ def main():
             time_column = pickle.load(inp)
             event_column = pickle.load(inp)
             daily_run_data = pickle.load(inp)
+            # train_data = pickle.load(inp)
+            # event_data = pickle.load(inp)
     
-    lstm_data = processLSTM(daily_run_data)
+    daily_run_data, event_data, equipment = processLSTM(dataDir, daily_run_data)
+    train_data, event_data = deleteMissing(daily_run_data, event_data, equipment)
     
     # split current data into train and test set since we dont have the ultimate test y values
-    X_train = all_data_train[features]
-    X_train_n = lstm_data
+    # X_train = all_data_train[features]
+    X_train = train_data
     # Y_train = all_data_train[[time_column, event_column]]
     # let's start with one output
-    Y_train = all_data_train[event_column]
+    # Y_train = all_data_train[event_column]
+    Y_train = event_data
 
     sequence_length = 5
     train_dataset = SequenceDataset(
