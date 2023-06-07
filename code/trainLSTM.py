@@ -19,7 +19,7 @@ def train_model(data_loader, model, loss_function, optimizer):
     total_loss = 0
     model.train()
 
-    for X, y in data_loader:
+    for i, (X, y) in enumerate(data_loader):
         output = model(X)
         loss = loss_function(output, y)
 
@@ -28,7 +28,10 @@ def train_model(data_loader, model, loss_function, optimizer):
         optimizer.step()
 
         total_loss += loss.item()
-
+        if i % 10000 == 1:
+            torch.save(model.state_dict(), f"/work/wdata/{i}.pt")
+            print(f"Train loss at {i}: {total_loss/(i*3)}")
+        # model.load_state_dict(torch.load(f"/work/wdata/1.pt"))
     avg_loss = total_loss / num_batches
     print(f"Train loss: {avg_loss}")
 
@@ -89,6 +92,8 @@ def main():
     num_hidden_units = 16
 
     model = ShallowRegressionLSTM(num_features=X_train.columns.shape[0], hidden_units=num_hidden_units)
+    # device = torch.device("cuda")
+    # model.to(device)
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
