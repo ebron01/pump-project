@@ -45,7 +45,7 @@ def main():
     if False:
         with open('my_data.pkl', 'wb') as outp:
             all_data_train, features, time_column, event_column, daily_run_data = processData(dataDir)
-            train_data, event_data = processLSTM(dataDir, daily_run_data)
+            train_data, event_data, sequence_length = processLSTM(dataDir, daily_run_data)
             # daily_run_data, event_data, equipment = processLSTM(dataDir, daily_run_data)
             # train_data, event_data = deleteMissing(daily_run_data, event_data, equipment)
             pickle.dump(all_data_train, outp, pickle.HIGHEST_PROTOCOL)
@@ -54,6 +54,7 @@ def main():
             pickle.dump(event_column, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(train_data, outp, pickle.HIGHEST_PROTOCOL)
             pickle.dump(event_data, outp, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(sequence_length, outp, pickle.HIGHEST_PROTOCOL)
     else :
         with open('my_data.pkl', 'rb') as inp:
             all_data_train = pickle.load(inp)
@@ -62,6 +63,7 @@ def main():
             event_column = pickle.load(inp)
             train_data = pickle.load(inp)
             event_data = pickle.load(inp)
+            sequence_length = pickle.load(inp)
     
     # train_data, event_data = deleteMissing(daily_run_data, equipment)
     # split current data into train and test set since we dont have the ultimate test y values
@@ -72,7 +74,7 @@ def main():
     # Y_train = all_data_train[event_column]
     Y_train = event_data
 
-    sequence_length = 5
+
     train_dataset = SequenceDataset(
         target=Y_train,
         features=X_train,

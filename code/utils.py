@@ -179,7 +179,7 @@ def processLSTM(dataDir, daily_data, threshold=51):
         # event_data[key] = event
         train_data = train_data.append(df)
     # return train_data, event_data, equipment
-    return train_data.drop(['failure_number_x', 'dt', 'event'], axis=1), train_data['event']
+    return train_data.drop(['failure_number_x', 'dt', 'event'], axis=1), train_data['event'], max
 
 def deleteMissing(daily_data, event_data, equipment, threshold=51):
     '''For some of the pumps there are not enough daily data to be included in train. 
