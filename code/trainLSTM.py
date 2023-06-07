@@ -88,8 +88,7 @@ def main():
     learning_rate = 5e-5
     num_hidden_units = 16
 
-    model = ShallowRegressionLSTM(num_features=len(
-        features), hidden_units=num_hidden_units)
+    model = ShallowRegressionLSTM(num_features=X_train.columns.shape[0], hidden_units=num_hidden_units)
     loss_function = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
